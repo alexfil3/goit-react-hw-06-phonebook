@@ -1,0 +1,60 @@
+import React from 'react';
+import { addContact } from 'redux/contactsSlice';
+import { useDispatch } from 'react-redux';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { object, string } from 'yup';
+import css from './ContactForm.module.css';
+
+const FormError = ({ name }) => {
+  return (
+    <ErrorMessage
+      name={name}
+      render={message => <p className={css.errorText}>{message}</p>}
+    />
+  );
+};
+
+export const ContactForm = () => {
+  const dispatch = useDispatch();
+
+  const { form, label, input, button } = css;
+
+  const initialValues = {
+    name: '',
+    number: '',
+  };
+
+  const userSchema = object({
+    name: string().required(),
+    number: string().required(),
+  });
+
+  const handleSubmit = (values, { resetForm }) => {
+    dispatch(addContact(values));
+    resetForm();
+  };
+
+  return (
+    <Formik
+      initialValues={initialValues}
+      validationSchema={userSchema}
+      onSubmit={handleSubmit}
+    >
+      <Form className={form}>
+        <label className={label}>
+          Name
+          <Field className={input} type="text" name="name" />
+          <FormError name="name" />
+        </label>
+        <label className={label}>
+          Number
+          <Field className={input} type="tel" name="number" />
+          <FormError name="number" />
+        </label>
+        <button type="submit" className={button}>
+          Add contact
+        </button>
+      </Form>
+    </Formik>
+  );
+};
