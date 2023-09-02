@@ -7,12 +7,13 @@ const contactsSlice = createSlice({
   name: 'contacts',
   initialState: { contacts: [] },
   reducers: {
-    addContact(state, action) {
-      state.contacts
-        .map(({ name }) => name.toLocaleLowerCase())
-        .includes(action.payload.name.toLocaleLowerCase())
-        ? alert(`${action.payload.name} is already in contacts`)
-        : state.contacts.push({ ...action.payload, id: nanoid() });
+    addContact: {
+      reducer: (state, action) => {
+        state.contacts.push(action.payload);
+      },
+      prepare: data => {
+        return { payload: { ...data, id: nanoid() } };
+      },
     },
     deleteContact(state, action) {
       state.contacts = state.contacts.filter(
@@ -35,17 +36,3 @@ export const contactsReducer = persistReducer(
 export const { addContact, deleteContact } = contactsSlice.actions;
 
 export const getContacts = state => state.contacts.contacts;
-
-// Another option of using addContact
-//  addContact: {
-//       reducer: (state, action) => {
-//         state.contacts
-//           .map(({ name }) => name.toLocaleLowerCase())
-//           .includes(action.payload.name.toLocaleLowerCase())
-//           ? alert(`${action.payload.name} is already in contacts`)
-//           : state.contacts.push(action.payload);
-//       },
-//       prepare: data => {
-//         return { payload: { ...data, id: nanoid() } };
-//       },
-//     },
